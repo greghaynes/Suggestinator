@@ -2,7 +2,7 @@ from corpus import MsgPackCorpus
 
 from gensim.corpora.dictionary import Dictionary
 from gensim.models import LsiModel
-from gensim.similarities import MatrixSimilarity
+from gensim.similarities import Similarity
 
 import msgpack
 
@@ -16,7 +16,8 @@ def main():
     corpus = MsgPackCorpus("data/nonprofits.msgpack", dictionary)
     lsi = LsiModel.load("data/nonprofits.lsi")
 
-    index = MatrixSimilarity.load("data/nonprofits.index")
+    #index = MatrixSimilarity.load("data/nonprofits.index")
+    index = Similarity.load("data/index")
     
     doc = "school of public health education"
 
