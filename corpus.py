@@ -38,7 +38,7 @@ class MsgPackCorpus(TextCorpus):
             yield [x for x in u[0].lower().split() if x in self.dictionary.token2id]
 
     def __getitem__(self, index):
-        unpacker = msgpack.Unpacker(self.path)
+        unpacker = msgpack.Unpacker(open(self.path))
         for i, u in enumerate(unpacker):
             if i == index:
                 return u[0]
@@ -49,3 +49,9 @@ class MsgPackCorpus(TextCorpus):
         if self.length == None:
             self.scan_src()
         return self.data_map[index]
+
+    def add_text(self, text, data):
+        if self.length == None:
+            self.scan_src()
+        self.data_map[self.length] = data
+        self.length = self.length + 1
