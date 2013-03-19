@@ -18,8 +18,8 @@ class MsgPackCorpus(TextCorpus):
         self.data_map = {}
 
     def scan_src(self):
-        unpacker = msgpack.Unpacker(self.path)
-        sef.length = 0
+        unpacker = msgpack.Unpacker(open(self.path))
+        self.length = 0
         for u in unpacker:
             self.data_map[self.length] = u[1]
             self.length = self.length + 1
@@ -31,7 +31,7 @@ class MsgPackCorpus(TextCorpus):
 
     def get_texts(self):
         self.length = 0
-        unpacker = msgpack.Unpacker(self.path)
+        unpacker = msgpack.Unpacker(open(self.path))
         for u in unpacker:
             self.data_map[self.length] = u[1]
             self.length += 1
@@ -48,4 +48,4 @@ class MsgPackCorpus(TextCorpus):
     def get_data(self, index):
         if self.length == None:
             self.scan_src()
-        return data_map[index]
+        return self.data_map[index]
