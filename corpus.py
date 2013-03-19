@@ -17,12 +17,16 @@ class MsgPackCorpus(TextCorpus):
         self.length = None
         self.data_map = {}
 
+    def scan_src(self):
+        unpacker = msgpack.Unpacker(self.path)
+        sef.length = 0
+        for u in unpacker:
+            self.data_map[self.length] = u[1]
+            self.length = self.length + 1
+
     def __len__(self):
         if self.length == None:
-            # We have to compute the length
-            unpacker = msgpack.Unpacker(self.path)
-            for u in unpacker:
-                self.lenth = self.length + 1
+            self.scan_src()
         return self.length
 
     def get_texts(self):
@@ -42,4 +46,6 @@ class MsgPackCorpus(TextCorpus):
         raise IndexError("index %d larger than number of documents" % index)
     
     def get_data(self, index):
+        if self.length == None:
+            self.scan_src()
         return data_map[index]
