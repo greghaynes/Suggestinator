@@ -2,6 +2,7 @@ from gensim.corpora.dictionary import Dictionary
 from corpus import MsgPackCorpus
 
 import logging
+import sys
 
 def gendict(corpus_path, dict_path,
             words_path="/usr/share/dict/words",
@@ -21,10 +22,31 @@ def gendict(corpus_path, dict_path,
     dictionary.save(dict_path)
 
 
-if __name__ == "__main__":
+def usage():
+    print 'usage: %s [command]' % sys.argv[0]
+    print ''
+    print 'Commands:'
+    print '\tgendict - Generate a dictionary'
+
+
+def main():
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
     corpus_path = "data/corpus.msgpack"
     dict_path = "data/dictionary"
-    gendict(corpus_path, dict_path, no_below=2, no_above=0.8, keep_n=30000)
-    dictionary = Dictionary.load(dict_path)
-    print dictionary
+    
+    if len(sys.argv) != 2:
+        usage()
+        return
+    
+    if sys.argv[1] == 'gendict':
+        print 'Generating Dictionary from corporus %s' % corpus_path
+        gendict(corpus_path, dict_path, no_below=2, no_above=0.8, keep_n=30000)
+        dictionary = Dictionary.load(dict_path)
+    else:
+        print "Invalid command"
+        usage()
+        return
+
+
+if __name__ == "__main__":
+    main()
