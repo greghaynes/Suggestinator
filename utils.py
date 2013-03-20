@@ -1,8 +1,11 @@
 from gensim.corpora.dictionary import Dictionary
-from corpus import MsgPackCorpus
+from gensim.models import LsiModel
+from gensim.similarities import Similarity
 
 import logging
 import sys
+
+from corpus import MsgPackCorpus
 
 def gendict(corpus_path, dict_path,
             words_path="/usr/share/dict/words",
@@ -22,19 +25,32 @@ def gendict(corpus_path, dict_path,
     dictionary.save(dict_path)
 
 
+def genmodel(model_path, corpus, dictionary, num_topics):
+    model = LsiModel(corpus, id2word=dictionary, num_topics=num_topics)
+    model.save(model_path)
+
+
+def genindex(index_path, model, corpus, num_features):
+    index = Similarity(index_path, model[corpus], num_features=num_features)
+    index.save()
+
+
 def usage():
-    print 'usage: %s [command]' % sys.argv[0]
+    print 'usage: %s [command] args...' % sys.argv[0]
     print ''
     print 'Commands:'
     print '\tgendict - Generate a dictionary'
+    print '\tgenmodel - Generate the LSI model'
 
 
 def main():
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
     corpus_path = "data/corpus.msgpack"
     dict_path = "data/dictionary"
+    model_path = "data/model"
+    index_path = "data/index"
     
-    if len(sys.argv) != 2:
+    if len(sys.argv) < 2:
         usage()
         return
     
@@ -42,6 +58,17 @@ def main():
         print 'Generating Dictionary from corporus %s' % corpus_path
         gendict(corpus_path, dict_path, no_below=2, no_above=0.8, keep_n=30000)
         dictionary = Dictionary.load(dict_path)
+    elif sys.argv[1] == 'genmodel':
+        print 'Generating LSI model'
+        dictionary = Dictionary.load(dict_path)
+        corpus = MsgPackCorpus(corpus_path, dictionary)
+        genmodel(model_path, corpus, dictionary, num_topics=500)
+    elif sys.argv[1] == 'genindex':
+        print 'Generating index'
+        dictionary = Dictionary.load(dict_path)
+        corpus = MsgPackCorpus(corpus_path, dictionary)
+        model = LsiModel.load(model_path)
+        genindex(index_path, model, corpus, 500)
     else:
         print "Invalid command"
         usage()
