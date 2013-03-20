@@ -41,6 +41,7 @@ def usage():
     print 'Commands:'
     print '\tgendict - Generate a dictionary'
     print '\tgenmodel - Generate the LSI model'
+    print '\tgenindex - Generate index'
 
 
 def main():
